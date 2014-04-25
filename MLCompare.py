@@ -2,18 +2,18 @@
 
 import scipy as sp
 import numpy as np
-from sklearn import datasets, svm, neighbors, linear_model
+from sklearn import datasets, cross_validation, svm, neighbors, linear_model
 
 from multiprocessing import Process, Manager
 
 DEBUG = True
 
-"""
-A helper class, to train and compare classifiers in parallel.
-"""
-
 
 class Learner():
+
+    """
+    A helper class, to train and compare classifiers in parallel.
+    """
 
     def __init__(self, algorithm, dataset, targets):
         self.algorithm = algorithm[1]
@@ -23,12 +23,16 @@ class Learner():
         self.train = Process(target=self.parallelTrain, args=(self.dataset,))
 
     def parallelTrain(self, data):
-        self.algorithm().fit(self.dataset, self.targets)
+        self.algorithm.fit(self.dataset, self.targets)
+        scores = cross_validation.cross_val_score(
+            self.algorithm, self.dataset, self.targets, n_jobs=15)
+        scores = np.mean(scores)
         if DEBUG:
-            print 'Fitted %s' % self.name
+            print 'Fitted %s with training scores %s' % (self.name, scores)
 
     def printResult(self, dataset, targets):
-        print 'Result for %s' % self.name
+        score = self.algorithm.score(dataset, targets)
+        print '%s:      Correct: %s     Time: 0     Parameters: ()' % (self.name, score)
 
 # TODO:
 # - By only calling MLCompare, you view of algorithm is performing better.
@@ -45,9 +49,9 @@ class Learner():
 
 def MLCompare(dataset, targets):
     algorithms = [
-        ('SVM', svm.SVC),
-        ('kNN', neighbors.KNeighborsClassifier),
-        ('Logistic Classifier', linear_model.LogisticRegression),
+        ('SVM', svm.SVC()),
+        ('kNN', neighbors.KNeighborsClassifier()),
+        ('Logistic Classifier', linear_model.LogisticRegression()),
     ]
 
     train_set = dataset[10:]
