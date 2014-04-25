@@ -14,14 +14,17 @@ A helper class, to train and compare classifiers in parallel.
 class Learner():
 
     def __init__(self, algorithm, dataset, targets):
-        self.algorithm = algorithm[0]
-        self.name = algorithm[1]
+        self.algorithm = algorithm[1]
+        self.name = algorithm[0]
         self.dataset = dataset
         self.targets = targets
-        self.process = Process(target=self.parallel_train, args=())
+        self.train = Process(target=self.parallel_train, args=(self, self.dataset))
 
     def parallel_train(self, data):
         print 'Not sure if useful or not yet.'
+
+    def printResult(self):
+        print 'Result for %s' % self.name
 
 # TODO:
 # - By only calling MLCompare, you view of algorithm is performing better.
@@ -44,7 +47,15 @@ def MLCompare(dataset, targets):
     ]
 
     learners = [Learner(x, dataset, targets) for x in algorithms]
-    print learners
+
+    for l in learners:
+        l.train.start()
+
+    for l in learners:
+        l.train.join()
+
+    for l in learners:
+        l.printResult()
 
 # For testing purposes:
 data = datasets.load_iris()
