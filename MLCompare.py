@@ -6,6 +6,8 @@ from sklearn import datasets, svm, neighbors, linear_model
 
 from multiprocessing import Process, Manager
 
+DEBUG = True
+
 """
 A helper class, to train and compare classifiers in parallel.
 """
@@ -18,12 +20,14 @@ class Learner():
         self.name = algorithm[0]
         self.dataset = dataset
         self.targets = targets
-        self.train = Process(target=self.parallel_train, args=(self, self.dataset))
+        self.train = Process(target=self.parallelTrain, args=(self.dataset,))
 
-    def parallel_train(self, data):
-        print 'Not sure if useful or not yet.'
+    def parallelTrain(self, data):
+        self.algorithm().fit(self.dataset, self.targets)
+        if DEBUG:
+            print 'Fitted %s' % self.name
 
-    def printResult(self):
+    def printResult(self, dataset, targets):
         print 'Result for %s' % self.name
 
 # TODO:
@@ -46,16 +50,18 @@ def MLCompare(dataset, targets):
         ('Logistic Classifier', linear_model.LogisticRegression),
     ]
 
-    learners = [Learner(x, dataset, targets) for x in algorithms]
+    train_set = dataset[10:]
+    test_set = dataset[:10]
+    train_targets = targets[10:]
+    test_targets = targets[:10]
 
-    for l in learners:
-        l.train.start()
+    learners = [Learner(x, train_set, train_targets) for x in algorithms]
 
-    for l in learners:
-        l.train.join()
+    [l.train.start() for l in learners]
 
-    for l in learners:
-        l.printResult()
+    [l.train.join() for l in learners]
+
+    [l.printResult(test_set, test_targets) for l in learners]
 
 # For testing purposes:
 data = datasets.load_iris()
