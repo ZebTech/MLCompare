@@ -12,7 +12,7 @@ DEBUG = True
 class Learner():
 
     """
-    A helper class, to train and compare classifiers in parallel.
+    A helper class, to train and compare classifiers in parallel threads.
     """
 
     def __init__(self, algorithm, dataset, targets):
