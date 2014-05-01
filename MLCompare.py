@@ -8,8 +8,11 @@ from sklearn.cross_validation import KFold
 
 from multiprocessing import Process, Manager
 
+# Show the debug messages ?
 DEBUG = True
 
+# Application settings
+TEST_SET_PERCENTAGE = 0.1
 
 class Learner():
 
@@ -47,7 +50,13 @@ class Learner():
         np.random.shuffle(shuffled)
         features = shuffled[:, :-1]
         targets = shuffled[:, -1]
-        return (features, features, features, features)
+        # Creating test and train sets
+        test_length = TEST_SET_PERCENTAGE * len(targets)
+        train_data, train_targets = features[
+            :, test_length], targets[:, test_length]
+        test_data, test_targets = features[
+            :, test_length], targets[:, test_length]
+        return (train_data, train_targets, test_data, test_targets)
 
     def printResult(self, features, targets):
         score = 0.34  # self.algorithm.score(features, targets)
