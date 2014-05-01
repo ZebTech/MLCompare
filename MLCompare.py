@@ -9,7 +9,7 @@ from sklearn.cross_validation import KFold, cross_val_score
 from multiprocessing import Process, Manager
 
 # Show the debug messages ?
-DEBUG = True
+DEBUG = False
 
 # Computer Settings
 NB_THREADS = 4
@@ -35,12 +35,13 @@ class Learner():
          self.test_data,
          self.test_targets) = self.buildSets(features, targets)
         self.optimal_algo = self.algorithm()
+        self.optimal_params = {}
         self.averaged_score = 0.0
         self.train = Process(
             target=self.parallelTrain, args=(self.train_data, self))
 
     def parallelTrain(self, data, Learner):
-        Learner.optimal_algo = Learner.findBestParams()
+        Learner.optimal_algo, Learner.optimal_params = Learner.findBestParams()
         Learner.averaged_score = Learner.findAverageCVResults()
 
     def findBestParams(self):
@@ -51,7 +52,8 @@ class Learner():
             print ''
             message = 'The optimal algorithm for %s is: %s'
             print message % (self.name, clf.best_estimator_)
-        return clf.best_estimator_
+            print ''
+        return clf.best_estimator_, clf.best_params_
 
     def findAverageCVResults(self):
         cross_validator = KFold(len(self.train_data), n_folds=KFOLD_NB_FOLDS)
@@ -91,7 +93,7 @@ class Learner():
         message = '%s:      Correct: %s     Average: %s     Time: 0     Parameters: %s'
         print ''
         print ''
-        print message % (self.name, score, self.averaged_score, self.optimal_algo)
+        print message % (self.name, score, self.averaged_score, self.optimal_params)
         print ''
         print ''
 
