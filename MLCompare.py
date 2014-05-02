@@ -143,11 +143,16 @@ def MLCompare(features, targets):
         ('SVM', svm.SVC,
          {'C': [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0],
           'kernel': ['linear', 'rbf', 'poly', 'sigmoid'],
-          'degree': [2, 3, 4, 5, 6, 7, 8]}),
+          'degree': [2, 3, 4, 5, 6, 7, 8],
+          'gamma': [0.0, 1.0, 10.0, 100.0]
+          }),
 
 
-        # ('kNN', neighbors.KNeighborsClassifier,
-        #  {'C': [1, 10, 100, 1000, 10000]}),
+        ('kNN', neighbors.KNeighborsClassifier,
+         {'n_neighbors': [1, 5, 10, 25, 50, 100, 200, 500, 1000],
+          'weights': ['uniform', 'distance'],
+          'algorithm': ['auto'],
+          }),
 
 
         ('Logistic Classifier', linear_model.LogisticRegression,
