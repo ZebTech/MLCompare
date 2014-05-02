@@ -178,6 +178,14 @@ def MLCompare(features, targets):
           'bootstrap': [True, False],
           'n_jobs': [NB_THREADS],
           }),
+
+
+        ('AdaBoost', ensemble.AdaBoostClassifier,
+         {'n_estimators': [2, 5, 10, 25, 50, 100, 200],
+          'base_estimator': [tree.DecisionTreeClassifier()],
+          'learning_rate': [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0],
+          'algorithm': ['SAMME.R', 'SAMME']
+          }),
     ]
 
     learners = [Learner(x, features, targets) for x in algorithms]
