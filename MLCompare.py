@@ -2,7 +2,7 @@
 
 import time
 import numpy as np
-from sklearn import datasets, svm, neighbors, linear_model
+from sklearn import datasets, svm, neighbors, linear_model, naive_bayes
 from sklearn.grid_search import GridSearchCV
 from sklearn.cross_validation import KFold, cross_val_score
 
@@ -125,18 +125,6 @@ class Learner():
         print ''
         print ''
 
-# TODO:
-# - By only calling MLCompare, you view of algorithm is performing better.
-# - The learner should do an average of 10-15 rounds of learning/prediction.
-# - Each learning phase should be done in parallel.
-# - Use KFold for training and averages.
-# - Try almost all parameters for each algorithm. (Check Grid-Search)
-# - Finish by showing a  nice overview for each algorithm.
-# - Optional: Could be nice to also have some graphs ?
-#
-# For each classifier, output this example line:
-# SVM   Correct: 0.87  Time: 5.46s  Parameters: C=0.5, M=4.67, Kernel='rbf'
-
 
 def MLCompare(features, targets):
     algorithms = [
@@ -160,6 +148,15 @@ def MLCompare(features, targets):
           'penalty': ['l1', 'l2'],
           'fit_intercept': [True, False]
           }),
+
+
+        ('MultinomialNB', naive_bayes.MultinomialNB,
+         {'alpha': [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0],
+          'fit_prior': [True, False]
+          }),
+
+
+        ('GaussianNB', naive_bayes.GaussianNB,{}),
     ]
 
     learners = [Learner(x, features, targets) for x in algorithms]
@@ -187,7 +184,5 @@ MLCompare(data.data, data.target)
 
 """
 TODO:
-- Time learning and prediciton phase.
-- Implement more algorithms with more parameters.
 - Test with a larger dataset.
 """
