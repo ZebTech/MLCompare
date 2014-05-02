@@ -1,4 +1,11 @@
 #-*- coding: utf-8 -*-
+"""
+TODO:
+- Test with a larger dataset.
+- Add choice for regression vs classification.
+    (separate methods or function params)
+- Add more algorithms.
+"""
 
 import time
 import numpy as np
@@ -9,7 +16,7 @@ from sklearn.cross_validation import KFold, cross_val_score
 from multiprocessing import Process, Manager
 
 # Show the debug messages ?
-DEBUG = False
+DEBUG = True
 
 # Computer Settings
 NB_THREADS = 4
@@ -100,9 +107,9 @@ class Learner():
         # Creating test and train sets
         test_length = int(TEST_SET_PERCENTAGE * len(targets))
         train_data, train_targets = features[
-            0:test_length], targets[0:test_length]
+            0:-test_length], targets[0:-test_length]
         test_data, test_targets = features[
-            test_length:], targets[test_length:]
+            -test_length:], targets[-test_length:]
         if DEBUG:
             print ''
             print 'Train set size: %s examples.' % len(train_data)
@@ -206,15 +213,10 @@ def MLCompare(features, targets):
     print ''
     print 'Evaluation Ended.'
 
-# For testing purposes:
-data = datasets.load_iris()
+# Uncomment to see an example:
+# data = datasets.load_iris()
+# MLCompare(data.data, data.target)
+data = datasets.load_digits()
+timer = time.time()
 MLCompare(data.data, data.target)
-
-
-"""
-TODO:
-- Test with a larger dataset.
-- Add choice for regression vs classification.
-    (separate methods or function params)
-- Add more algorithms.
-"""
+print 'Total execution: %.3fs' % (time-time() -timer)

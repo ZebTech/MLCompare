@@ -8,7 +8,6 @@ Note that this is meant to give you a quick insight on how some algorithms perfo
 Example
 -------
 
-> #######Input:
 > data = datasets.load_iris()
 
 > MLCompare(data.data, data.target)
