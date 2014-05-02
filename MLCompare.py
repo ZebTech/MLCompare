@@ -2,7 +2,7 @@
 
 import time
 import numpy as np
-from sklearn import datasets, svm, neighbors, linear_model, naive_bayes, tree
+from sklearn import datasets, svm, neighbors, linear_model, naive_bayes, tree, ensemble
 from sklearn.grid_search import GridSearchCV
 from sklearn.cross_validation import KFold, cross_val_score
 
@@ -166,6 +166,18 @@ def MLCompare(features, targets):
           'min_samples_split': [1, 2, 4, 8, 16, 32],
           'min_samples_leaf': [1, 2, 4, 8, 16, 32],
           }),
+
+
+        ('Random Forest', ensemble.RandomForestClassifier,
+         {'n_estimators': [2, 5, 10, 15],
+          'criterion': ['gini', 'entropy'],
+          'max_features': [None, 'sqrt', 'log2'],
+          'max_depth': [None, 2, 4, 8, 16, 32, 64],
+          'min_samples_split': [1, 2, 4, 8, 16, 32],
+          'min_samples_leaf': [1, 2, 4, 8, 16, 32],
+          'bootstrap': [True, False],
+          'n_jobs': [NB_THREADS],
+          }),
     ]
 
     learners = [Learner(x, features, targets) for x in algorithms]
@@ -184,7 +196,7 @@ def MLCompare(features, targets):
 
     print ''
     print ''
-    print 'Program Ended.'
+    print 'Evaluation Ended.'
 
 # For testing purposes:
 data = datasets.load_iris()
@@ -194,4 +206,7 @@ MLCompare(data.data, data.target)
 """
 TODO:
 - Test with a larger dataset.
+- Add choice for regression vs classification.
+    (separate methods or function params)
+- Add more algorithms.
 """
