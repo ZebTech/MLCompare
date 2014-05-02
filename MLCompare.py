@@ -43,6 +43,7 @@ class Learner():
         self.prediciton_time = 0
         self.train = Process(
             target=self.parallelTrain, args=(self.train_data, self, self.shared))
+        self.score = Process(target=self.scoreLearner, args=())
 
     def startTraining(self):
         self.shared.optimal_algo = None
@@ -109,7 +110,7 @@ class Learner():
             print 'Test set size: %s inputs.' % len(test_data)
         return (train_data, train_targets, test_data, test_targets)
 
-    def score(self):
+    def scoreLearner(self):
         self.train_time = time.time()
         self.optimal_algo.fit(self.train_data, self.train_targets)
         self.train_time = time.time() - self.train_time
@@ -157,7 +158,13 @@ def MLCompare(features, targets):
     print ''
     print 'RESULTS:'
 
-    [l.score() for l in learners]
+    [l.score.start() for l in learners]
+
+    [l.score.join() for l in learners]
+
+    print ''
+    print ''
+    print 'Program Ended.'
 
 # For testing purposes:
 data = datasets.load_iris()
