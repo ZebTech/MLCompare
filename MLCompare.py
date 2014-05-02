@@ -37,12 +37,31 @@ class Learner():
         self.optimal_algo = self.algorithm()
         self.optimal_params = {}
         self.averaged_score = 0.0
+        self.shared = Manager().Namespace()
         self.train = Process(
-            target=self.parallelTrain, args=(self.train_data, self))
+            target=self.parallelTrain, args=(self.train_data, self, self.shared))
 
-    def parallelTrain(self, data, Learner):
-        Learner.optimal_algo, Learner.optimal_params = Learner.findBestParams()
-        Learner.averaged_score = Learner.findAverageCVResults()
+    def startTraining(self):
+        self.shared.optimal_algo = None
+        self.shared.optimal_params = None
+        self.shared.averaged_score = None
+
+        self.train.start()
+        if DEBUG:
+            print 'learning started'
+
+    def waitTraining(self):
+        self.train.join()
+        self.optimal_algo = self.shared.optimal_algo
+        self.optimal_params = self.shared.optimal_params
+        self.averaged_score = self.shared.averaged_score
+        if DEBUG:
+            print '%s learning joined' % self.name
+
+    def parallelTrain(self, data, Learner, shared):
+        shared.optimal_algo, shared.optimal_params = Learner.findBestParams()
+        shared.averaged_score = Learner.findAverageCVResults(
+            Learner.train_data, Learner .train_targets)
 
     def findBestParams(self):
         clf = GridSearchCV(
@@ -55,10 +74,10 @@ class Learner():
             print ''
         return clf.best_estimator_, clf.best_params_
 
-    def findAverageCVResults(self):
-        cross_validator = KFold(len(self.train_data), n_folds=KFOLD_NB_FOLDS)
-        scores = cross_val_score(self.optimal_algo, self.train_data,
-                                 self.train_targets, n_jobs=NB_THREADS, cv=cross_validator)
+    def findAverageCVResults(self, features, targets):
+        cross_validator = KFold(len(features), n_folds=KFOLD_NB_FOLDS)
+        scores = cross_val_score(
+            self.optimal_algo, features, targets, n_jobs=NB_THREADS, cv=cross_validator)
         scores = np.mean(scores)
         if DEBUG:
             print ''
@@ -90,10 +109,11 @@ class Learner():
     def score(self):
         self.optimal_algo.fit(self.train_data, self.train_targets)
         score = self.optimal_algo.score(self.test_data, self.test_targets)
-        message = '%s:      Correct: %s     Average: %s     Time: 0     Parameters: %s'
+        message = '%s:      Test: %s     CV: %s     Time: 0     Parameters: %s'
+        var_mess = (self.name, score, self.averaged_score, self.optimal_params)
         print ''
         print ''
-        print message % (self.name, score, self.averaged_score, self.optimal_params)
+        print message % var_mess
         print ''
         print ''
 
@@ -121,9 +141,9 @@ def MLCompare(features, targets):
 
     learners = [Learner(x, features, targets) for x in algorithms]
 
-    [l.train.start() for l in learners]
+    [l.startTraining() for l in learners]
 
-    [l.train.join() for l in learners]
+    [l.waitTraining() for l in learners]
 
     print ''
     print ''
@@ -134,3 +154,11 @@ def MLCompare(features, targets):
 # For testing purposes:
 data = datasets.load_iris()
 MLCompare(data.data, data.target)
+
+
+"""
+TODO:
+- Time learning and prediciton phase.
+- Implement more algorithms with more parameters.
+- Test with a larger dataset.
+"""
