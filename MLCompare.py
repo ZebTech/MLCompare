@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*-
 
+import time
 import scipy as sp
 import numpy as np
 from sklearn import datasets, svm, neighbors, linear_model
@@ -38,6 +39,8 @@ class Learner():
         self.optimal_params = {}
         self.averaged_score = 0.0
         self.shared = Manager().Namespace()
+        self.train_time = 0
+        self.prediciton_time = 0
         self.train = Process(
             target=self.parallelTrain, args=(self.train_data, self, self.shared))
 
@@ -107,10 +110,15 @@ class Learner():
         return (train_data, train_targets, test_data, test_targets)
 
     def score(self):
+        self.train_time = time.time()
         self.optimal_algo.fit(self.train_data, self.train_targets)
+        self.train_time = time.time() - self.train_time
+        self.prediciton_time = time.time()
         score = self.optimal_algo.score(self.test_data, self.test_targets)
-        message = '%s:      Test: %s     CV: %s     Time: 0     Parameters: %s'
-        var_mess = (self.name, score, self.averaged_score, self.optimal_params)
+        self.prediciton_time = time.time() - self.prediciton_time
+        message = '%s:      Test: %s     CV: %s     Train Time: %s s     Score Time: %s s     Parameters: %s'
+        var_mess = (self.name, score, self.averaged_score,
+                    self.train_time, self.prediciton_time, self.optimal_params)
         print ''
         print ''
         print message % var_mess
