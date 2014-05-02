@@ -128,35 +128,35 @@ class Learner():
 
 def MLCompare(features, targets):
     algorithms = [
-        # ('SVM', svm.SVC,
-        #  {'C': [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0],
-        #   'kernel': ['linear', 'rbf', 'poly', 'sigmoid'],
-        #   'degree': [2, 3, 4, 5, 6, 7, 8],
-        #   'gamma': [0.0, 1.0, 10.0, 100.0]
-        #   }),
+        ('SVM', svm.SVC,
+         {'C': [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0],
+          'kernel': ['linear', 'rbf', 'poly', 'sigmoid'],
+          'degree': [2, 3, 4, 5, 6, 7, 8],
+          'gamma': [0.0, 1.0, 10.0, 100.0]
+          }),
 
 
-        # ('kNN', neighbors.KNeighborsClassifier,
-        #  {'n_neighbors': [1, 5, 10, 25, 50, 100, 200, 500, 1000],
-        #   'weights': ['uniform', 'distance'],
-        #   'algorithm': ['auto'],
-        #   }),
+        ('kNN', neighbors.KNeighborsClassifier,
+         {'n_neighbors': [1, 5, 10, 25, 50, 100, 200, 500, 1000],
+          'weights': ['uniform', 'distance'],
+          'algorithm': ['auto'],
+          }),
 
 
-        # ('Logistic Classifier', linear_model.LogisticRegression,
-        #  {'C': [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0],
-        #   'penalty': ['l1', 'l2'],
-        #   'fit_intercept': [True, False]
-        #   }),
+        ('Logistic Classifier', linear_model.LogisticRegression,
+         {'C': [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0],
+          'penalty': ['l1', 'l2'],
+          'fit_intercept': [True, False]
+          }),
 
 
-        # ('MultinomialNB', naive_bayes.MultinomialNB,
-        #  {'alpha': [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0],
-        #   'fit_prior': [True, False]
-        #   }),
+        ('MultinomialNB', naive_bayes.MultinomialNB,
+         {'alpha': [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0],
+          'fit_prior': [True, False]
+          }),
 
 
-        # ('GaussianNB', naive_bayes.GaussianNB, {}),
+        ('GaussianNB', naive_bayes.GaussianNB, {}),
 
 
         ('Decision Tree', tree.DecisionTreeClassifier,
