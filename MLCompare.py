@@ -1,7 +1,6 @@
 #-*- coding: utf-8 -*-
 
 import time
-import scipy as sp
 import numpy as np
 from sklearn import datasets, svm, neighbors, linear_model
 from sklearn.grid_search import GridSearchCV
@@ -117,7 +116,7 @@ class Learner():
         self.prediciton_time = time.time()
         score = self.optimal_algo.score(self.test_data, self.test_targets)
         self.prediciton_time = time.time() - self.prediciton_time
-        message = '%s:      Test: %s     CV: %s     Train Time: %s s     Score Time: %s s     Parameters: %s'
+        message = '%s:      Test: %.2f     CV: %.2f     Train Time: %.3fs     Score Time: %.3fs     Parameters: %s'
         var_mess = (self.name, score, self.averaged_score,
                     self.train_time, self.prediciton_time, self.optimal_params)
         print ''
@@ -141,11 +140,21 @@ class Learner():
 
 def MLCompare(features, targets):
     algorithms = [
-        ('SVM', svm.SVC, [{'C': [1.01, 10.01, 100.01, 1000.01, 10000.01]}]),
+        ('SVM', svm.SVC,
+         {'C': [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0],
+          'kernel': ['linear', 'rbf', 'poly', 'sigmoid'],
+          'degree': [2, 3, 4, 5, 6, 7, 8]}),
+
+
         # ('kNN', neighbors.KNeighborsClassifier,
-        #  [{'C': [1, 10, 100, 1000, 10000]}]),
+        #  {'C': [1, 10, 100, 1000, 10000]}),
+
+
         ('Logistic Classifier', linear_model.LogisticRegression,
-         [{'C': [1.01, 10.01, 100.01, 1000.01, 10000.01]}]),
+         {'C': [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0],
+          'penalty': ['l1', 'l2'],
+          'fit_intercept': [True, False]
+          }),
     ]
 
     learners = [Learner(x, features, targets) for x in algorithms]
