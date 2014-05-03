@@ -135,11 +135,20 @@ class Learner():
 
 def MLCompare(features, targets):
     algorithms = [
-        ('SVM', svm.SVC,
-         {'C': [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0],
-          'kernel': ['linear', 'rbf', 'poly', 'sigmoid'],
-          'degree': [2, 3, 4, 5, 6, 7, 8],
-          'gamma': [0.0, 1.0, 10.0, 100.0]
+        # ('SVM', svm.SVC,
+        #  {'C': [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0, 100.0, 1000.0, 10000.0],
+        #   'kernel': ['linear', 'rbf', 'poly', 'sigmoid'],
+        #   'degree': [2, 3, 4, 5, 6, 7, 8],
+        #   'gamma': [0.0, 1.0, 10.0, 100.0]
+        #   }),
+
+        ('SGD', linear_model.SGDClassifier,
+         {
+         'loss': ['hinge', 'log', 'modified_huber', 'perceptron'],
+          'penalty': ['l1', 'l2', 'elasticnet'],
+          'alpha': [0.0001, 0.001, 0.01, 0.1],
+          'fit_intercept': [True, False],
+          'n_jobs': [NB_THREADS]
           }),
 
 
@@ -219,4 +228,4 @@ def MLCompare(features, targets):
 data = datasets.load_digits()
 timer = time.time()
 MLCompare(data.data, data.target)
-print 'Total execution: %.3fs' % (time-time() -timer)
+print 'Total execution: %.3fs' % (time.time() - timer)
